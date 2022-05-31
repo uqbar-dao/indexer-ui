@@ -13,6 +13,6 @@ export const handleLatestBlock = (get: GetState<ExplorerStore>, set: SetState<Ex
     const blockHeaders = [{ epochNum: ib.slot.block.height, blockHeader: ib.slot.header }, ...cur.blockHeaders.slice(0, 4)]
     const transactions = Object.values(ib.slot.block.chunks).reduce((acc: HashTransaction[], cur) => acc.concat(cur.transactions), [])
   
-    set({ requestCache: {}, blockHeaders, transactions })
+    set({ blockHeaders, transactions })
   }
 }

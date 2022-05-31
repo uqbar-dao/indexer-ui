@@ -7,6 +7,8 @@ import { processRawData } from '../utils/object'
 import { addDecimalDots } from '../utils/number'
 import { HashTransaction } from '../types/Transaction'
 import { Block, RawBlock } from '../types/Block'
+import { mockData } from "../utils/constants"
+import { mockBlockHeaders, mockTransactions } from "../utils/mocks"
 
 export function createSubscription(app: string, path: string, e: (data: any) => void): SubscriptionRequestInterface {
   const request = {
@@ -24,7 +26,6 @@ export function createSubscription(app: string, path: string, e: (data: any) => 
 
 export interface ExplorerStore {
   loadingText: string | null
-  requestCache: { [key: string] : any }
   blockHeaders: BlockHeader[]
   transactions: HashTransaction[]
   init: () => Promise<void>
@@ -38,11 +39,13 @@ export interface ExplorerStore {
 
 const useExplorerStore = create<ExplorerStore>((set, get) => ({
   loadingText: 'Loading...',
-  requestCache: {},
   blockHeaders: [],
   transactions: [],
   init: async () => {
     // Subscriptions, includes getting assets
+    if (mockData) {
+      return set({ loadingText: null, blockHeaders: mockBlockHeaders, transactions: mockTransactions.map(t => ({ ...t, hash: '' })) })
+    }
     api.subscribe(createSubscription('uqbar-indexer', '/slot', handleLatestBlock(get, set)))
 
     const { headers } = await get().scry<{ headers: RawBlockHeader[] }>('/headers/5')
@@ -59,20 +62,7 @@ const useExplorerStore = create<ExplorerStore>((set, get) => ({
 
     set({ loadingText: null, transactions })
   },
-  scry: async <T>(path: string) => {
-    const { requestCache } = get()
-    const cachedResponse = requestCache[path];
-
-    if (cachedResponse) {
-      return cachedResponse
-    }
-
-
-    const result = api.scry<T>({ app: 'uqbar-indexer', path })
-    requestCache[path] = result
-    set({ requestCache })
-    return result
-  },
+  scry: async <T>(path: string) => api.scry<T>({ app: 'uqbar-indexer', path }),
   setLoading: (loadingText: string | null) => set({ loadingText }),
   getBlockHeaders: async (numHeaders: number) => {
     const blockHeaders = await api.scry({app: "uqbar-indexer", path: `/headers/${numHeaders}`})
