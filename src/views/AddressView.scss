@@ -1,0 +1,19 @@
+@use '../styles/colors.scss' as colors;
+@use '../styles/border.scss' as border;
+
+.address-view {
+  h3 {
+    font-weight: 500;
+    color: colors.$charcoal;
+  }
+
+  .transaction {
+    padding-top: 8px;
+    color: black;
+    text-decoration: none;
+
+    &:hover {
+      opacity: 0.5;
+    }
+  }
+}

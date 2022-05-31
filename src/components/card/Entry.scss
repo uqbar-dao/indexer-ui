@@ -1,0 +1,7 @@
+@use '../../styles/border.scss' as border;
+@use '../../styles/colors.scss' as colors;
+
+.entry {
+  padding: 12px 0;
+  border-bottom: 1px solid lightgray;
+}

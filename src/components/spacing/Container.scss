@@ -1,0 +1,13 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  padding: 0px 48px 48px;
+  overflow-y: scroll;
+  background-color: rgba(0, 0, 0, 0.02);
+  min-height: calc(100vh - 114px);
+
+  @media only screen and (max-width: 600px) {
+    padding: 16px;
+    margin: 0 auto;
+  }
+}
