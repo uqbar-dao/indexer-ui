@@ -1,5 +1,5 @@
 import Urbit from "@urbit/http-api"
-const api = new Urbit("", "", "block-explorer")
+const api = new Urbit("", "", "indexer")
 
 // @ts-ignore TODO window typings
 api.ship = window.ship
