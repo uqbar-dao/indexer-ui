@@ -2,6 +2,7 @@
 
 .link {
   color: colors.$uq-purple;
+  cursor: pointer;
 
   &.button {
     color: colors.$uq-purple;
@@ -11,7 +12,6 @@
     padding: 8px 16px;
     border-radius: 4px;
     border: 1px solid black;
-    cursor: pointer;
     text-decoration: none;
 
     &:hover {

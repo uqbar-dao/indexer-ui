@@ -15,5 +15,4 @@ export const STATUS_CODES : { [key: number] : string } = {
 
 export const getStatus = (status: number) => STATUS_CODES[status] || 'unknown'
 
-console.log(process.env.REACT_APP_MOCK_DATA)
 export const mockData = process.env.NODE_ENV === 'development' && Boolean(process.env.REACT_APP_MOCK_DATA)

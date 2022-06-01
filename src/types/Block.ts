@@ -1,33 +1,12 @@
+import { Grain, RawGrain } from "./Grain"
 import { HashTransaction } from "./Transaction"
 
 export interface RawGranary {
-  [key: string]: {
-    germ: {
-      'data': number
-      'is-rice': boolean
-      'salt': number
-    }
-    'holder': string
-    'id': string
-    'lord': string
-    'town-id': number
-  }
+  [key: string]: RawGrain
 }
 
 export interface Granary {
-  [key: string]: {
-    germ: {
-      isRice: boolean
-      cont?: null
-      owns?: string[]
-      data?: number
-      salt?: number
-    }
-    holder: string
-    id: string
-    lord: string
-    townId: number
-  }
+  [key: string]: Grain
 }
 
 export interface Populace { [key: string]: number }

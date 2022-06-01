@@ -13,52 +13,49 @@ import { getStatus, mockData } from '../utils/constants'
 import { removeDots } from '../utils/format'
 import { addHexDots } from '../utils/number'
 import { processRawData } from '../utils/object'
-import { mockHolderGrains, mockTransactions } from '../utils/mocks'
-
-import './AddressView.scss'
+import { mockLordGrains, mockTransactions } from '../utils/mocks'
 import { Grain, RawGrain } from '../types/Grain'
 import { RawLocation } from '../types/Location'
 
-const AddressView = () => {
+import './WheatView.scss'
+
+const WheatView = () => {
   const { scry } = useExplorerStore()
   const location = useLocation()
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [grains, setGrains] = useState<Grain[]>([])
-  const [display, setDisplay] = useState<'txns' | 'grains'>('txns')
+  const [display, setDisplay] = useState<'txns' | 'grains'>('grains')
 
   const splitPath = location.pathname.split('/')
-  const address = addHexDots(splitPath[splitPath.length - 1])
+  const wheat = addHexDots(splitPath[splitPath.length - 1])
 
   useEffect(() => {
     const getData = async () => {
-      const [from, holder] = await Promise.all([
-        scry<{ eggs: RawTransaction[] }>(`/from/${address}`),
-        scry<{ grains: { [key: string]: { grain: RawGrain; location: RawLocation } } }>(`/holder/${address}`)
+      const [lord] = await Promise.all([
+        // scry<{ eggs: RawTransaction[] }>(`/to/${wheat}`),
+        scry<{ grains: { [key: string]: { grain: RawGrain; location: RawLocation } } }>(`/lord/${wheat}`),
       ])
-      console.log('FROM:', from)
-      console.log('HOLDER:', holder)
-
-      setTransactions(processRawData(from.eggs).filter(Boolean).reverse())
-      setGrains(Object.values(holder.grains).map(value => processRawData(value).grain))
+      // console.log('TO:', to)
+      console.log('LORD:', lord)
+      
+      setGrains(Object.values(lord.grains).map(value => processRawData(value).grain))
     }
 
     if (mockData) {
-      setGrains(mockHolderGrains)
+      setGrains(mockLordGrains)
       return setTransactions(mockTransactions)
     }
 
     getData()
   }, [location]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  console.log(transactions)
-
   return (
     <Container className='address-view'>
       <Row style={{ alignItems: 'flex-end' }}>
-        <h2 style={{ fontWeight: 500, margin: '16px 16px 0 0' }}>Address</h2>
-        <CopyIcon text={removeDots(address)} />
+        <h2 style={{ fontWeight: 500, margin: '16px 16px 0 0' }}>Contract</h2>
+        <CopyIcon text={removeDots(wheat)} />
         <Text mono oneLine style={{ fontSize: 18 }}>
-          {removeDots(address)}
+          {removeDots(wheat)}
         </Text>
       </Row>
       <Card style={{ marginTop: 16, padding: '12px 16px' }}>
@@ -73,17 +70,9 @@ const AddressView = () => {
         <Col style={{ paddingTop: 12 }}>
           {display === 'txns' ? transactions.map((tx, i) => (
             <Col style={{ padding: 4 }} key={i}>
-              <Row className="grain">
-                <Text style={{ width: 28 }}>{i + 1}.</Text>
-                <Text style={{ width: 80 }}>Hash:</Text>
-                <Link href={`/tx/${removeDots('0x241a8cb84029928faf49a5c01c9a03f43538829512d4b2e383e3fd1d7b25dd2b')}`} className="transaction">
-                  <Text mono oneLine>{removeDots('0x241a8cb84029928faf49a5c01c9a03f43538829512d4b2e383e3fd1d7b25dd2b')}</Text>
-                </Link>
-              </Row>
-              <Row style={{ marginLeft: 28 }}>
-                <Text style={{ width: 80 }}>To:</Text>
-                <Text mono>{removeDots(tx.egg.shell.to)}</Text>
-              </Row>
+              <Link href={`/tx/${removeDots('0x241a8cb84029928faf49a5c01c9a03f43538829512d4b2e383e3fd1d7b25dd2b')}`} className="transaction">
+                <Text mono oneLine>{i + 1}. {removeDots('0x241a8cb84029928faf49a5c01c9a03f43538829512d4b2e383e3fd1d7b25dd2b')}</Text>
+              </Link>
               <Row style={{ marginLeft: 28 }}>
                 <Text style={{ width: 80 }}>Status:</Text>
                 <Text mono>{getStatus(tx.egg.shell.status)}</Text>
@@ -97,9 +86,9 @@ const AddressView = () => {
                 <Text mono oneLine>{removeDots(grain.id)}</Text>
               </Row>
               <Row style={{ marginLeft: 28 }}>
-                <Text style={{ width: 80 }}>Lord:</Text>
-                <Link href={`/contract/${removeDots(grain.lord)}`} className="lord">
-                  <Text mono>{removeDots(grain.lord)}</Text>
+                <Text style={{ width: 80 }}>Holder:</Text>
+                <Link href={`/address/${removeDots(grain.holder)}`} className="lord">
+                  <Text mono>{removeDots(grain.holder)}</Text>
                 </Link>
               </Row>
               <Row style={{ marginLeft: 28 }}>
@@ -114,4 +103,4 @@ const AddressView = () => {
   )
 }
 
-export default AddressView
+export default WheatView

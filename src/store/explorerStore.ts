@@ -46,11 +46,12 @@ const useExplorerStore = create<ExplorerStore>((set, get) => ({
     if (mockData) {
       return set({ loadingText: null, blockHeaders: mockBlockHeaders, transactions: mockTransactions.map(t => ({ ...t, hash: '' })) })
     }
-    api.subscribe(createSubscription('uqbar-indexer', '/slot', handleLatestBlock(get, set)))
-
+    
     const { headers } = await get().scry<{ headers: RawBlockHeader[] }>('/headers/5')
     const blockHeaders = headers.map(processRawData)
     set({ blockHeaders })
+
+    api.subscribe(createSubscription('uqbar-indexer', '/slot', handleLatestBlock(get, set)))
 
     const rawBlocks = await Promise.all(blockHeaders.map((bh: BlockHeader) => 
       get().scry<RawBlock>(`/chunk-num/${addDecimalDots(bh.epochNum.toString())}/${bh.blockHeader.num}/${0}`)

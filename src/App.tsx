@@ -8,6 +8,7 @@ import TransactionView from './views/TransactionView';
 import AddressView from './views/AddressView';
 import Navbar from './components/nav/Navbar';
 import LoadingOverlay from './components/popups/LoadingOverlay';
+import WheatView from './views/WheatView';
 // import TransactionsView from './views/TransactionsView';
 // import PendingTransactionsView from './views/PendingTransactionsView';
 // import ContractsView from './views/ContractsView';
@@ -29,6 +30,7 @@ function App() {
         <Route path="block/:epoch/:block/:town" element={<BlockView />} />
         <Route path="tx/:tx" element={<TransactionView />} />
         <Route path="address/:address" element={<AddressView />} />
+        <Route path="contract/:contract" element={<WheatView />} />
         {/* <Route path="blocks" element={<BlocksView />} />
         <Route path="txs" element={<TransactionsView />} />
         <Route path="pendingTxs" element={<PendingTransactionsView />} />

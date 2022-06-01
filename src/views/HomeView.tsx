@@ -11,7 +11,7 @@ import Container from '../components/spacing/Container'
 import Card from '../components/card/Card'
 import useExplorerStore from '../store/explorerStore'
 import Text from '../components/text/Text'
-import { ADDRESS_REGEX, BLOCK_SEARCH_REGEX, TXN_HASH_REGEX } from '../utils/form'
+import { ADDRESS_REGEX, BLOCK_SEARCH_REGEX, TXN_HASH_REGEX, WHEAT_REGEX, RICE_REGEX } from '../utils/regex'
 import { addHexPrefix, removeDots } from '../utils/format'
 import { getStatus } from '../utils/constants'
 import Link from '../components/nav/Link'
@@ -40,6 +40,9 @@ const HomeView = () => {
     } else if (TXN_HASH_REGEX.test(addHexPrefix(removeDots(searchValue)))) {
       console.log('TRANSACTION')
       navigate(`/tx/${addHexPrefix(removeDots(searchValue))}`)
+    } else if (WHEAT_REGEX.test(addHexPrefix(removeDots(searchValue)))) {
+      console.log('CONTRACT')
+      navigate(`/contract/${addHexPrefix(removeDots(searchValue))}`)
     } else {
       setInputError('Must be in address, txn hash, or epoch/block/town format (with slashes)')
     }
