@@ -1,4 +1,4 @@
-# Uqbar Block Explorer
+# Uqbar Block Explorer (indexer)
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
@@ -13,6 +13,12 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
+
+You must be running a ship with the %ziggurat suite and change the value of `"proxy": "http://localhost:8080"` in `package.json` to your ship's address.
+
+### `yarn start:mock`
+
+Runs the app in development mode with mock data, so there is no need to run a local ship.
 
 ### `yarn test`
 
