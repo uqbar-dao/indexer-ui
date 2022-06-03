@@ -11,20 +11,32 @@ import Container from '../components/spacing/Container'
 import Card from '../components/card/Card'
 import useExplorerStore from '../store/explorerStore'
 import Text from '../components/text/Text'
-import { ADDRESS_REGEX, BLOCK_SEARCH_REGEX, TXN_HASH_REGEX, WHEAT_REGEX, RICE_REGEX } from '../utils/regex'
+import { ADDRESS_REGEX, BLOCK_SEARCH_REGEX, TXN_HASH_REGEX, GRAIN_REGEX, ETH_ADDRESS_REGEX } from '../utils/regex'
 import { addHexPrefix, removeDots } from '../utils/format'
 import { getStatus } from '../utils/constants'
 import Link from '../components/nav/Link'
 
+const getOffset = (nextBlockTime: number) => Math.round((nextBlockTime - new Date().getTime()) / 1000)
+
 const HomeView = () => {
-  const { blockHeaders, transactions, init } = useExplorerStore()
+  const { blockHeaders, transactions, nextBlockTime, init } = useExplorerStore()
   const [searchValue, setSearchValue] = useState('')
   const [inputError, setInputError] = useState('')
+  const [timeToNextBlock, setTimeToNextBlock] = useState(getOffset(nextBlockTime || new Date().getTime()))
   const navigate = useNavigate()
 
   useEffect(() => {
-    init()
+    try {
+      init()
+    } catch (err) {}
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (nextBlockTime !== null) {
+      const interval = setInterval(() => setTimeToNextBlock(getOffset(nextBlockTime)), 1000)
+      return () => clearInterval(interval)
+    }
+  }, [nextBlockTime])
 
   const search = () => {
     if (!searchValue) {
@@ -33,16 +45,16 @@ const HomeView = () => {
     } else if (BLOCK_SEARCH_REGEX.test(searchValue)) {
       console.log('BLOCK')
       navigate(`/block/${searchValue}`)
-    } else if (ADDRESS_REGEX.test(addHexPrefix(removeDots(searchValue)))) {
+    } else if (ADDRESS_REGEX.test(addHexPrefix(removeDots(searchValue))) || ETH_ADDRESS_REGEX.test(addHexPrefix(removeDots(searchValue)))) {
       console.log('ADDRESS')
       navigate(`/address/${addHexPrefix(removeDots(searchValue))}`)
     // check for txn hash
     } else if (TXN_HASH_REGEX.test(addHexPrefix(removeDots(searchValue)))) {
       console.log('TRANSACTION')
       navigate(`/tx/${addHexPrefix(removeDots(searchValue))}`)
-    } else if (WHEAT_REGEX.test(addHexPrefix(removeDots(searchValue)))) {
-      console.log('CONTRACT')
-      navigate(`/contract/${addHexPrefix(removeDots(searchValue))}`)
+    } else if (GRAIN_REGEX.test(addHexPrefix(removeDots(searchValue)))) {
+      console.log('GRAIN')
+      navigate(`/grain/${addHexPrefix(removeDots(searchValue))}`)
     } else {
       setInputError('Must be in address, txn hash, or epoch/block/town format (with slashes)')
     }
@@ -62,6 +74,8 @@ const HomeView = () => {
       search()
     }
   }
+
+  console.log(timeToNextBlock)
 
   return (
     <Container className="home">
@@ -92,7 +106,14 @@ const HomeView = () => {
         </Card> */}
         <Row className='latest'>
           <Card className='latest-blocks'>
-            <h4>Latest Blocks</h4>
+            <Row style={{ justifyContent: 'space-between' }}>
+              <h4 style={{ flex: 1 }}>Latest Blocks</h4>
+              <h4 style={{ textAlign: 'end', height: 19, flex: 1 }}>Next:
+                <div style={{ width: 28, display: 'inline-block' }}>
+                  <Text large mono>{Math.max(0, timeToNextBlock)}</Text>
+                </div>
+              </h4>
+            </Row>
             <Col>
               {blockHeaders.map((bh, index) => (
                 <Link href={`/block/${bh.epochNum}/${bh.blockHeader.num}/1`} style={{ textDecoration: 'none', color: 'black' }} key={bh.epochNum}>

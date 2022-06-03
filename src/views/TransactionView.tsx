@@ -16,6 +16,7 @@ import Entry from '../components/card/Entry'
 import { mockTransaction } from '../utils/mocks'
 
 import './TransactionView.scss'
+import Col from '../components/spacing/Col'
 
 const TransactionView = () => {
   const { scry } = useExplorerStore()
@@ -29,9 +30,10 @@ const TransactionView = () => {
     const getData = async () => {
       // 0x523515b872fce8297919a3e40bfd48dec4d27d9700dd44dd81efc254ef8aa3e6
       
-      const result = await scry<{ eggs: RawTransaction[] }>(`/egg/${txnHash}`)
-      console.log('SCRY DATA:', result)
-      setTransaction(processRawData(result.eggs[0]))
+      const result = await scry<{ egg: { [key: string]: RawTransaction } }>(`/egg/${txnHash}`)
+      if (result) {
+        setTransaction(processRawData(Object.values(result.egg)[0]))
+      }
     }
 
     if (mockData) {
@@ -62,41 +64,50 @@ const TransactionView = () => {
         </Text>
         <Link href={`/block/${loc.epochNum}/${loc.blockNum}/${loc.townId}`} className="address">
           <Entry>
-            <Text style={{ width: 80 }}>Block:</Text>
+            <Text style={{ minWidth: 60 }}>Block:</Text>
             <Text mono oneLine>{loc.epochNum}-{loc.blockNum}-{loc.townId}</Text>
           </Entry>
         </Link>
         <Link href={`/address/${removeDots(shell.from.id)}`} className="address">
           <Entry>
-            <Text style={{ width: 80 }}>From:</Text>
+            <Text style={{ minWidth: 60 }}>From:</Text>
             <Text mono oneLine>{removeDots(shell.from.id)}</Text>
           </Entry>
         </Link>
+        <Link href={`/grain/${removeDots(shell.to)}`} className="address">
+          <Entry>
+            <Text style={{ minWidth: 60 }}>To:</Text>
+            <Text mono oneLine>{removeDots(shell.to)}</Text>
+          </Entry>
+        </Link>
         <Entry>
-          <Text style={{ width: 80 }}>To:</Text>
-          <Text mono oneLine>{removeDots(shell.to)}</Text>
-        </Entry>
-        <Entry>
-          <Text style={{ width: 80 }}>Status:</Text>
+          <Text style={{ minWidth: 60 }}>Status:</Text>
           <Text mono>{getStatus(shell.status)}</Text>
         </Entry>
         <Entry>
-          <Text style={{ width: 80 }}>Budget:</Text>
+          <Text style={{ minWidth: 60 }}>Budget:</Text>
           <Text mono oneLine>{shell.budget}</Text>
         </Entry>
         <Link href={`/address/${removeDots(yolk.caller.id)}`} className="address">
           <Entry>
-            <Text style={{ width: 80 }}>Caller:</Text>
+            <Text style={{ minWidth: 60 }}>Caller:</Text>
             <Text mono oneLine>{removeDots(yolk.caller.id)}</Text>
           </Entry>
         </Link>
         <Entry>
-          <Text style={{ width: 80 }}>Args:</Text>
+          <Text style={{ minWidth: 60 }}>Args:</Text>
           <Text mono oneLine>{removeDots(JSON.stringify(yolk.args))}</Text>
         </Entry>
-        <Row style={{ padding: '12px 0 2px' }}>
-          <Text style={{ width: 80 }}>Grains:</Text>
-          <Text mono oneLine>{removeDots((yolk.myGrains.length ? yolk.myGrains : yolk.contGrains).join(', '))}</Text>
+        <Row style={{ padding: '12px 0 2px', alignItems: 'flex-start' }}>
+          <Text style={{ minWidth: 60 }}>Grains:</Text>
+          <Col style={{ maxWidth: 'calc(100% - 60px)' }}>
+            {yolk.myGrains.concat(yolk.contGrains).map(grain => (
+              // <Link key={grain} href={`/grain/${removeDots(grain)}`} className="address">
+              //   <Text mono oneLine>{removeDots(grain)}</Text>
+              // </Link>
+              <Text mono oneLine key={grain}>{removeDots(grain)}</Text>
+            ))}
+          </Col>
         </Row>
       </Card>
     </Container>

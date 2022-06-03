@@ -1,7 +1,9 @@
 import { Populace, RawGranary } from "./Block"
+import { Location, RawLocation } from "./Location"
 import { HashTransaction, RawHashTransaction } from "./Transaction"
 
-export interface RawIncomingBlock {
+export interface RawSlot {
+  location: RawLocation
   slot: {
     header: {
       'data-hash': string,
@@ -28,7 +30,8 @@ export interface RawIncomingBlock {
   }
 }
 
-export interface IncomingBlock {
+export interface Slot {
+  location: Location
   slot: {
     header: {
       dataHash: string,

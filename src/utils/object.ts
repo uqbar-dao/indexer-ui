@@ -1,4 +1,4 @@
-export const processRawData = (input: { [key: string]: any }) : any => {
+export const processRawData = (input: { [key: string]: any } | undefined) : any => {
   if (!input || typeof input !== 'object') {
     return input
   } else if (input instanceof Array) {

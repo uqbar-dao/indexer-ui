@@ -8,10 +8,9 @@ import TransactionView from './views/TransactionView';
 import AddressView from './views/AddressView';
 import Navbar from './components/nav/Navbar';
 import LoadingOverlay from './components/popups/LoadingOverlay';
-import WheatView from './views/WheatView';
 // import TransactionsView from './views/TransactionsView';
 // import PendingTransactionsView from './views/PendingTransactionsView';
-// import ContractsView from './views/ContractsView';
+// import GrainsView from './views/GrainsView';
 // import AccountsView from './views/AccountsView';
 
 function App() {
@@ -30,11 +29,11 @@ function App() {
         <Route path="block/:epoch/:block/:town" element={<BlockView />} />
         <Route path="tx/:tx" element={<TransactionView />} />
         <Route path="address/:address" element={<AddressView />} />
-        <Route path="contract/:contract" element={<WheatView />} />
+        <Route path="grain/:grain" element={<AddressView />} />
         {/* <Route path="blocks" element={<BlocksView />} />
         <Route path="txs" element={<TransactionsView />} />
         <Route path="pendingTxs" element={<PendingTransactionsView />} />
-        <Route path="contracts" element={<ContractsView />} /> */}
+        <Route path="contracts" element={<GrainsView />} /> */}
         <Route
           path="*"
           element={

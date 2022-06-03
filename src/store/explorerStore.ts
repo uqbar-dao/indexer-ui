@@ -26,10 +26,11 @@ export function createSubscription(app: string, path: string, e: (data: any) => 
 
 export interface ExplorerStore {
   loadingText: string | null
+  nextBlockTime: number | null
   blockHeaders: BlockHeader[]
   transactions: HashTransaction[]
   init: () => Promise<void>
-  scry: <T>(path: string) => Promise<T>
+  scry: <T>(path: string) => Promise<T | undefined>
   setLoading: (loadingText: string | null) => void
   getBlockHeaders: (numHeaders: number) => Promise<void>
   getChunkInfo: (epoch: number, block: number, town: number) => Promise<void>
@@ -39,6 +40,7 @@ export interface ExplorerStore {
 
 const useExplorerStore = create<ExplorerStore>((set, get) => ({
   loadingText: 'Loading...',
+  nextBlockTime: null,
   blockHeaders: [],
   transactions: [],
   init: async () => {
@@ -47,37 +49,60 @@ const useExplorerStore = create<ExplorerStore>((set, get) => ({
       return set({ loadingText: null, blockHeaders: mockBlockHeaders, transactions: mockTransactions.map(t => ({ ...t, hash: '' })) })
     }
     
-    const { headers } = await get().scry<{ headers: RawBlockHeader[] }>('/headers/5')
-    const blockHeaders = headers.map(processRawData)
-    set({ blockHeaders })
+    try {
+      const result = await get().scry<{ headers: RawBlockHeader[] }>('/headers/5')
+      if (result) {
+        const blockHeaders = result.headers.map(processRawData)
+        set({ blockHeaders })
+    
+        api.subscribe(createSubscription('indexer', '/slot', handleLatestBlock(get, set)))
+    
+        const rawBlocks = (await Promise.all(blockHeaders.map((bh: BlockHeader) => 
+          get().scry<RawBlock>(`/chunk-num/${addDecimalDots(bh.epochNum.toString())}/${bh.blockHeader.num}/${0}`)
+        )))
 
-    api.subscribe(createSubscription('uqbar-indexer', '/slot', handleLatestBlock(get, set)))
+        const metadata = await api.scry<any>({ app: 'wallet', path: '/token-metadata' })
 
-    const rawBlocks = await Promise.all(blockHeaders.map((bh: BlockHeader) => 
-      get().scry<RawBlock>(`/chunk-num/${addDecimalDots(bh.epochNum.toString())}/${bh.blockHeader.num}/${0}`)
-    ))
-    const blocks: Block[] = rawBlocks.map(processRawData)
-    const transactions = blocks
-      .reduce((acc: HashTransaction[], cur) => acc.concat(cur.chunk.transactions), [])
-      .slice(0, 10)
+        const blocks: Block[] = rawBlocks.map(processRawData)
+        const transactions = blocks
+          .reduce((acc: HashTransaction[], cur) => acc.concat(cur.chunk.transactions), [])
+          .slice(0, 10)
+          .filter(Boolean)
+  
+        set({ transactions })
+      }
+    } catch (err) {
+      console.warn(err)
+    }
 
-    set({ loadingText: null, transactions })
+    set({ loadingText: null })
   },
-  scry: async <T>(path: string) => api.scry<T>({ app: 'uqbar-indexer', path }),
+  scry: async <T>(path: string): Promise<T | undefined> => {
+    try {
+      const result = await api.scry<T>({ app: 'indexer', path })
+      return result
+    } catch (err: any) {
+      console.warn('SCRY ERROR:', err.toString())
+      if (err.toString().includes('Unexpected token < in JSON at position 0')) {
+        return undefined
+      }
+      throw new Error(err)
+    }
+  },
   setLoading: (loadingText: string | null) => set({ loadingText }),
   getBlockHeaders: async (numHeaders: number) => {
-    const blockHeaders = await api.scry({app: "uqbar-indexer", path: `/headers/${numHeaders}`})
+    const blockHeaders = await api.scry({app: "indexer", path: `/headers/${numHeaders}`})
     console.log('BLOCK HEADERS:', blockHeaders)
   },
   getChunkInfo: async (epoch: number, block: number, town: number) => {
-    const chunks = await api.scry({app: "uqbar-indexer", path: `/chunk-num/${epoch}/${block}/${town}`})
+    const chunks = await api.scry({app: "indexer", path: `/chunk-num/${epoch}/${block}/${town}`})
     console.log('CHUNKS:', chunks)
   },
   getTransactionInfo: async (transaction: string) => {
-    await api.scry({app: "uqbar-indexer", path: `/egg/${transaction}`})
+    await api.scry({app: "indexer", path: `/egg/${transaction}`})
   },
   getAddressInfo: async (address: string) => {
-    await api.scry({app: "uqbar-indexer", path: `/from/${address}`})
+    await api.scry({app: "indexer", path: `/from/${address}`})
   },
 }))
 

@@ -1,5 +1,6 @@
 .text {
   line-height: 1.33333;
+  font-size: 0.875rem;
 
   &.mono {
     font-family: monospace, monospace;
@@ -9,5 +10,9 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  &.large {
+    font-size: 1rem;
   }
 }

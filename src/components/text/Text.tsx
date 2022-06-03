@@ -1,20 +1,22 @@
 import React from 'react'
 import './Text.scss'
 
-interface TextProps extends React.HTMLAttributes<HTMLSpanElement> {
+interface TextProps extends React.HTMLAttributes<HTMLDivElement> {
   mono?: boolean
   oneLine?: boolean
+  large?: boolean
 }
 
 const Text: React.FC<TextProps> = ({
   mono = false,
   oneLine = false,
+  large = false,
   ...props
 }) => {
   return (
-    <span {...props} className={`text ${props.className || ''} ${mono ? 'mono' : ''} ${oneLine ? 'one-line' : ''}`}>
+    <div {...props} className={`text ${props.className || ''} ${mono ? 'mono' : ''} ${oneLine ? 'one-line' : ''} ${large ? 'large' : ''}`}>
       {props.children}
-    </span>
+    </div>
   )
 }
 

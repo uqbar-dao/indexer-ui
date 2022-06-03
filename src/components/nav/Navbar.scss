@@ -6,8 +6,8 @@
   justify-content: space-between;
   position: relative;
 
-  @media only screen and (max-width: 520px) {
-    margin: 16px 16px 0px;
+  @media only screen and (max-width: 600px) {
+    margin: 16px 4px;
   }
 
   .nav-link {
@@ -17,7 +17,7 @@
     margin-bottom: -2px;
     font-weight: 600;
 
-    @media only screen and (max-width: 520px) {
+    @media only screen and (max-width: 600px) {
       padding: 8px 20px;
     }
 
