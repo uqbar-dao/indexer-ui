@@ -1,3 +1,4 @@
+import useExplorerStore from "../../store/explorerStore"
 import { Grain } from "../../types/Grain"
 import { removeDots } from "../../utils/format"
 import Link from "../nav/Link"
@@ -8,15 +9,18 @@ import './Grain.scss'
 
 interface GrainEntryProps {
   grain: Grain
-  isRice?: boolean
+  isRiceView?: boolean
   isWalletAddress?: boolean
 }
 
 export const GrainEntry = ({
   grain,
-  isRice = false,
+  isRiceView = false,
   isWalletAddress = false,
 }: GrainEntryProps) => {
+  const { metadata } = useExplorerStore()
+  const tokenMetadata = grain.germ.salt ? metadata[grain.germ.salt] : null
+
   return (
     grain.id !== grain.lord ? (
       <Col className="grain" key={grain.id}>
@@ -45,12 +49,18 @@ export const GrainEntry = ({
             )
           )}
         </Row>
-        {isRice && (
+        {isRiceView && (
           <Row>
             <Text style={{ minWidth: 60 }}>Lord:</Text>
             <Link href={`/grain/${removeDots(grain.lord)}`}>
               <Text mono oneLine>{removeDots(grain.lord)}</Text>
             </Link>
+          </Row>
+        )}
+        {Boolean(tokenMetadata) && (
+          <Row>
+            <Text style={{ minWidth: 60 }}>Token:</Text>
+            <Text mono oneLine>{tokenMetadata?.symbol}</Text>
           </Row>
         )}
         <Row>
@@ -74,6 +84,12 @@ export const GrainEntry = ({
                 <Text mono oneLine>{removeDots(grain.lord)}</Text>
               </Link>
             </Row> */}
+            {Boolean(tokenMetadata) && (
+              <Row>
+                <Text style={{ minWidth: 60 }}>Token:</Text>
+                <Text mono oneLine>{tokenMetadata?.symbol}</Text>
+              </Row>
+            )}
             <Row>
               <Text style={{ minWidth: 60 }}>Town:</Text>
               <Text mono oneLine>{grain.townId}</Text>

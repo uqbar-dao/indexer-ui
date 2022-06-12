@@ -45,6 +45,8 @@ const AddressView = () => {
           scry<{ grain: { [key: string]: { grain: RawGrain; location: RawLocation } } }>(`/holder/${address}`),
           scry<{ grain: { [key: string]: { grain: RawGrain; location: RawLocation } } }>(`/grain/${address}`)
         ])
+
+        console.log(rawData)
         
         const grainIsRice = Boolean(
           Object.values(grainInfo?.grain || {}).length === 1 &&
@@ -154,16 +156,20 @@ const AddressView = () => {
               displayTransactions.map((tx, i, arr) => (
                 <TransactionEntry tx={tx} isWalletAddress={isWalletAddress} displayIndex={arr.length - i} key={tx.hash || i} />
               ))
+            ) : transactions.length > 0 ? (
+              <Text>No transactions under this town</Text>
             ) : (
-              <Text>No transactions under this town(s)</Text>
+              <Text>No transactions</Text>
             )
           ) : (
             displayGrains.length > 0 ? (
               displayGrains.map((grain) => (
-                <GrainEntry grain={grain} isRice={isRice} isWalletAddress={isWalletAddress} key={grain.id} />
+                <GrainEntry grain={grain} isRiceView={isRice} isWalletAddress={isWalletAddress} key={grain.id} />
               ))
+            ) :  grains.length > 0 ? (
+              <Text style={{ padding: 16 }}>No assets under this town</Text>
             ) : (
-              <Text style={{ padding: 16 }}>No assets under this town(s)</Text>
+              <Text>No assets</Text>
             )
           )}
         </Col>

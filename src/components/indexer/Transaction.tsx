@@ -1,3 +1,4 @@
+import moment from 'moment'
 import { Transaction } from "../../types/Transaction"
 import { getStatus } from "../../utils/constants"
 import { removeDots } from "../../utils/format"
@@ -24,6 +25,10 @@ export const TransactionEntry = ({
         <Text style={{ width: 28 }}>{displayIndex}.</Text>
       </Col>
       <Col style={{ maxWidth: 'calc(100% - 20px)' }}>
+        <Row>
+          <Text style={{ minWidth: 60 }}>Time:</Text>
+          <Text mono oneLine>{moment(tx.timestamp).format('YYYY-MM-DD hh:mm')}</Text>
+        </Row>
         <Row>
           <Text style={{ minWidth: 60 }}>Hash:</Text>
           <Link href={`/tx/${removeDots(tx.hash || '')}`}>

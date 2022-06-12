@@ -75,8 +75,6 @@ const HomeView = () => {
     }
   }
 
-  console.log(timeToNextBlock)
-
   return (
     <Container className="home">
       <Col className='splash'>
